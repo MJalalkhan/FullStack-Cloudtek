@@ -7,7 +7,7 @@ exports.shortUrl = async (req, res) => {
   let { longUrl, slug } = req.body;
 
   if (!validUrl.isUri(baseUrl)) {
-    return res.status(401).json("Invalid base URL");
+    return res.status(502).json("Invalid base URL");
   }
   try {
     if (validUrl.isUri(longUrl)) {
@@ -16,7 +16,13 @@ exports.shortUrl = async (req, res) => {
       });
 
       if (url) {
-        return res.send({message:'Url is shortened once with shortUrl and slug below ',url});
+        return res.send({message:'Url is shortened once with shortUrl and slug below '});
+      }
+      let urlShortened = await Url.findOne({
+        shortUrl:longUrl,
+      });
+      if(urlShortened){
+        return res.send({message:'Url is already shortened'})
       }
       if (req.body.slug) {
         let slugExist = await Url.findOne({
@@ -40,7 +46,7 @@ exports.shortUrl = async (req, res) => {
       await url.save();
       return res.json(url);
     } else {
-      return res.status(401).send("Invalid longUrl");
+      return res.status(502).send("Invalid longUrl");
     }
   } catch (err) {
     console.log(err);

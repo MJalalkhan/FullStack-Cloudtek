@@ -7,23 +7,65 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useState } from "react";
+
+import SessionUrlsComp from "./sessionUrls";
 
 const theme = createTheme();
 
 export default function Search() {
+  // const [check, setCheck] = useState(
+  //   JSON.parse(sessionStorage.getItem("sessionUrls"))
+  // );
+  // console.log(check, "check");
+  let sessionData = JSON.parse(sessionStorage.getItem("sessionUrls"));
+  console.log(typeof sessionData);
+  const [sessionUrls, setSessionUrls] = useState(
+    sessionData !== null && sessionData !== undefined
+      ? Object.values(JSON.parse(sessionStorage.getItem("sessionUrls")))
+      : []
+  );
+
   const handleSubmit = (event) => {
     event.preventDefault();
+
     const data = new FormData(event.currentTarget);
+
     let obj = {
-      name: data.get("longUrl"),
-      email: data.get("slug"),
+      longUrl: data.get("longUrl"),
+      slug: data.get("slug"),
     };
     console.log("data obj ", obj);
+    if (obj.longUrl !== "") {
+      fetch("http://localhost:5000/api/url/shorten", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(obj),
+      })
+        .then((response) => response.json())
+        .then((res) => {
+          // console.log("Success:", res);
+          if (res.longUrl) {
+            document.getElementById("longUrl").value = "";
+            document.getElementById("slug").value = "";
+            setSessionUrls([...sessionUrls, res]);
+          }
+          sessionStorage.setItem("sessionUrls", JSON.stringify(sessionUrls));
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    } else {
+      console.log("url can not be empty");
+    }
+    console.log(sessionUrls, "session in submit");
   };
 
   return (
     <ThemeProvider theme={theme}>
-      <Container component="main" >
+      <Container component="main">
         <CssBaseline />
         <Box
           sx={{
@@ -37,7 +79,7 @@ export default function Search() {
             Shorten Your Url
           </Typography>
           <Box
-          style={{width: "-webkit-fill-available"}}
+            style={{ width: "-webkit-fill-available" }}
             component="form"
             noValidate
             onSubmit={handleSubmit}
@@ -46,6 +88,7 @@ export default function Search() {
             <Grid container spacing={1}>
               <Grid item xs={8}>
                 <TextField
+                  autoComplete="url"
                   name="longUrl"
                   required
                   fullWidth
@@ -60,11 +103,10 @@ export default function Search() {
                   id="slug"
                   label="Slug"
                   name="slug"
-                  autoComplete="email"
+                  autoComplete="slug"
                 />
               </Grid>
             </Grid>
-          </Box>
             <Button
               type="submit"
               fullWidth
@@ -73,7 +115,11 @@ export default function Search() {
             >
               Shorten
             </Button>
+          </Box>
         </Box>
+        {/* {console.log(setSessionData,'setSessionData')} */}
+
+        <SessionUrlsComp sessionData={sessionUrls} />
       </Container>
     </ThemeProvider>
   );
