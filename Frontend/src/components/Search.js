@@ -14,10 +14,6 @@ import SessionUrlsComp from "./sessionUrls";
 const theme = createTheme();
 
 export default function Search() {
-  // const [check, setCheck] = useState(
-  //   JSON.parse(sessionStorage.getItem("sessionUrls"))
-  // );
-  // console.log(check, "check");
   let sessionData = JSON.parse(sessionStorage.getItem("sessionUrls"));
   console.log(typeof sessionData);
   const [sessionUrls, setSessionUrls] = useState(
@@ -46,12 +42,12 @@ export default function Search() {
       })
         .then((response) => response.json())
         .then((res) => {
-          // console.log("Success:", res);
           if (res.longUrl) {
             document.getElementById("longUrl").value = "";
             document.getElementById("slug").value = "";
             setSessionUrls([...sessionUrls, res]);
           }
+
           sessionStorage.setItem("sessionUrls", JSON.stringify(sessionUrls));
         })
         .catch((error) => {

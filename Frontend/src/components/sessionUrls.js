@@ -8,7 +8,6 @@ import Paper from "@mui/material/Paper";
 import { Typography } from "@mui/material";
 
 export default function SessionUrlsComp({ sessionData }) {
-  //   let [sessionData,setSessionData] = useState(JSON.parse(sessionStorage.getItem("sessionUrls")));
 
   return (
     <>
@@ -18,9 +17,7 @@ export default function SessionUrlsComp({ sessionData }) {
           <Table sx={{ minWidth: 650 }} aria-label="caption table">
             <TableHead>
               <TableRow>
-                <TableCell align="left" >
-                  longUrl
-                </TableCell>
+                <TableCell align="left">longUrl</TableCell>
 
                 <TableCell align="right">ShortUrl&nbsp;</TableCell>
               </TableRow>
@@ -29,17 +26,14 @@ export default function SessionUrlsComp({ sessionData }) {
               {sessionData.map((row, index) => (
                 <TableRow key={index}>
                   <TableCell component="th" scope="row">
-
-                      {/* {console.log(row,'ROWWWWWWWWWWWW QQQQQQQQQQQQQ')}
-                      {console.log(row[1],'ROWWWWWWWWWWWW')} */}
-                    {row.longUrl ?
-                    row.longUrl.slice(0,100):
-                    row[1].longUrl.slice(0,100)}...
+                   
+                    {row.longUrl
+                      ? row.longUrl.slice(0, 100)
+                      : row[1].longUrl.slice(0, 100)}
+                    ...
                   </TableCell>
                   <TableCell align="right" component="a" href={row.shortUrl}>
-                    {row.shortUrl?
-                    row.shortUrl:
-                    row[1].shortUrl}...
+                    {row.shortUrl ? row.shortUrl : row[1].shortUrl}...
                   </TableCell>
                 </TableRow>
               ))}
